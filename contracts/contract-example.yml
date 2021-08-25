@@ -1,6 +1,6 @@
 contractId: "product-create"
-url: "http://localhost:8080/product"
-method: "POST"
+url: "http://localhost:3000/product/1"
+method: "GET"
 request: "
 {
   \"$id\": \"product-request\",
@@ -27,7 +27,7 @@ response: "
   \"description\": \"A product from Acme's catalog\",
   \"type\": \"object\",
   \"properties\": {
-      \"productId\": {
+      \"id\": {
         \"description\": \"The unique identifier for a product\",
         \"type\": \"integer\"
       },
@@ -41,5 +41,5 @@ response: "
         \"exclusiveMinimum\": 0
       }
   },
-  \"required\": [ \"productId\", \"productName\", \"price\" ]
+  \"required\": [ \"id\", \"productName\", \"price\" ]
 }"

@@ -1,0 +1,5 @@
+{
+    "product": [
+      { "id": 1, "productName": "json-server", "price": 11.0 }
+    ]
+  }
