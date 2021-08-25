@@ -1,9 +1,17 @@
-package internal
+package kalista
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/santhosh-tekuri/jsonschema"
 	"gopkg.in/yaml.v2"
-	"strings"
 )
 
 type contractDefinition struct {
@@ -47,13 +55,39 @@ func (k *Kalista) buildContractDefinition(contractId string) (contractDefinition
 }
 
 type Kalista struct {
-	RepoUrl   string
-	RepoToken string
-	yamls     map[string][]byte
+	yamls map[string][]byte
 }
 
-func NewKalista() Kalista {
-	return Kalista{}
+func readAllContractFiles(path string) map[string][]byte {
+
+	yamls := make(map[string][]byte)
+	err := filepath.Walk(path,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() {
+				ext := filepath.Ext(path)
+				if ext != "yml" && ext != "yaml" {
+					bytesFile, _ := ioutil.ReadFile(path)
+					yamls[path] = bytesFile
+				}
+			}
+			return nil
+		})
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return yamls
+
+}
+
+func NewKalista(folderPath string) Kalista {
+	return Kalista{
+		yamls: readAllContractFiles(folderPath),
+	}
 }
 
 func (k *Kalista) MakeTest(contractId string) (bool, error) {
@@ -61,11 +95,37 @@ func (k *Kalista) MakeTest(contractId string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	//do request
-	var res interface{}
-	if err = contract.responseSchema.ValidateInterface(res); err != nil {
+
+	req, _ := http.NewRequest(contract.Method, contract.Url, nil)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
 		return false, err
 	}
+
+	defer res.Body.Close()
+	var result interface{}
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		return false, err
+	}
+
+	err = json.Unmarshal(body, &result)
+
+	if err != nil {
+		return false, err
+	}
+
+	if err = contract.responseSchema.ValidateInterface(result); err != nil {
+		return false, err
+	}
+
 	return true, nil
 }
 
