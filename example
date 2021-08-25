@@ -1,0 +1,52 @@
+
+var jsonReq = `
+{
+	"productName" : "a new product",
+	"price" : 12.50
+}
+`
+
+var jsonRes = `
+{
+	"productId" : 1,
+	"productName" : "a new product",
+	"price" : 12.70
+}
+`
+
+
+
+dat, err := ioutil.ReadFile("contract-example.yml")
+	var contract contractDefinition
+	err = yaml.Unmarshal(dat, &contract)
+	if err != nil {
+		panic(err)
+	}
+
+	compiler := jsonschema.NewCompiler()
+	if err := compiler.AddResource("request.json", strings.NewReader(contract.Request)); err != nil {
+		panic(err)
+	}
+	if err := compiler.AddResource("response.json", strings.NewReader(contract.Response)); err != nil {
+		panic(err)
+	}
+
+	schema, err := compiler.Compile("request.json")
+	if err != nil {
+		panic(err)
+	}
+	var req interface {}
+	err =  json.Unmarshal([]byte(jsonReq), &req)
+	if err := schema.ValidateInterface(req); err != nil {
+		panic(err)
+	}
+
+	schema, err = compiler.Compile("response.json")
+	if err != nil {
+		panic(err)
+	}
+	var res interface {}
+	err =  json.Unmarshal([]byte(jsonRes), &res)
+	if err := schema.ValidateInterface(res); err != nil {
+		panic(err)
+	}

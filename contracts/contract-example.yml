@@ -1,0 +1,45 @@
+contractId: "product-create"
+url: "http://localhost:8080/product"
+method: "POST"
+request: "
+{
+  \"$id\": \"product-request\",
+  \"title\": \"Product\",
+  \"description\": \"A product from Acme's catalog\",
+  \"type\": \"object\",
+  \"properties\": {
+    \"productName\": {
+      \"description\": \"Name of the product\",
+      \"type\": \"string\"
+    },
+    \"price\": {
+      \"description\": \"The price of the product\",
+      \"type\": \"number\",
+      \"exclusiveMinimum\": 0
+    }
+  },
+  \"required\": [ \"productName\", \"price\" ]
+}"
+response: "
+{
+  \"$id\": \"product-response\",
+  \"title\": \"Product\",
+  \"description\": \"A product from Acme's catalog\",
+  \"type\": \"object\",
+  \"properties\": {
+      \"productId\": {
+        \"description\": \"The unique identifier for a product\",
+        \"type\": \"integer\"
+      },
+      \"productName\": {
+        \"description\": \"Name of the product\",
+        \"type\": \"string\"
+      },
+      \"price\": {
+        \"description\": \"The price of the product\",
+        \"type\": \"number\",
+        \"exclusiveMinimum\": 0
+      }
+  },
+  \"required\": [ \"productId\", \"productName\", \"price\" ]
+}"
