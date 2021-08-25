@@ -4,11 +4,6 @@ import (
 	"fmt"
 )
 
-
-
-
 func main () {
-
-	fmt.Println("validation successfull")
-
+	fmt.Println("ok")
 }

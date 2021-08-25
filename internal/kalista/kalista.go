@@ -1,7 +1,7 @@
-package main
+package internal
 
 import (
-	"github.com/santhosh-tekuri/jsonschema/v4"
+	"github.com/santhosh-tekuri/jsonschema"
 	"gopkg.in/yaml.v2"
 	"strings"
 )
