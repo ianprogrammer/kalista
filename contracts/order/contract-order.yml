@@ -1,0 +1,35 @@
+contractId: "order-get"
+url: "http://localhost:3000/order/1"
+method: "GET"
+request: ""
+response: "
+{
+  \"$id\": \"order-response\",
+  \"title\": \"order\",
+  \"description\": \"Order from Acme's orders\",
+  \"type\": \"object\",
+  \"properties\": {
+      \"id\": {
+        \"description\": \"The unique identifier of the order\",
+        \"type\": \"integer\"
+      },
+      \"total\": {
+        \"description\": \"Total of the order\",
+        \"type\": \"number\",
+        \"exclusiveMinimum\": 0
+      },
+      \"products\": {
+        \"description\": \"itens of the order\",
+        \"type\": \"array\",
+        \"items\": {
+          \"type\": \"object\",
+          \"properties\": {
+            \"id\": {\"type\": \"string\"},
+            \"quantity\": {\"type\": \"number\"}
+          }
+        }
+      }
+  },
+  \"required\": [ \"id\", \"total\", \"products\" ]
+}
+"

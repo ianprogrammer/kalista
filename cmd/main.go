@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"github.com/ianprogrammer/kalista/internal/kalista"
 )
 
-func main () {
-	fmt.Println("ok")
+func main() {
+
+	k := kalista.NewKalista("../contracts")
+	k.StartContracTest()
 }
