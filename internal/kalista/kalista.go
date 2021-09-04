@@ -19,6 +19,7 @@ type contractDefinition struct {
 	ContractId     string `yaml:"contractId"`
 	Url            string
 	Method         string
+	Status         int
 	Request        string
 	Response       string
 	requestSchema  *jsonschema.Schema
@@ -67,7 +68,6 @@ const succeed = "\u2713"
 const failed = "\u2717"
 
 func readAllContractFiles(path string) map[string][]byte {
-
 	yamls := make(map[string][]byte)
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
@@ -89,7 +89,6 @@ func readAllContractFiles(path string) map[string][]byte {
 	}
 
 	return yamls
-
 }
 
 func NewKalista(folderPath string) Kalista {
@@ -114,7 +113,6 @@ func (k *Kalista) StartContracTest() {
 				if ok {
 					log.Printf("\t%s\t ContractId: %s, ContractPath: %s", succeed, contract.ContractId, key)
 				}
-
 			}
 
 		}(key)
@@ -135,8 +133,12 @@ func (k *Kalista) makeTest(c contractDefinition) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	defer res.Body.Close()
+
+	if res.StatusCode != c.Status {
+		return false, err
+	}
+
 	var result interface{}
 	body, err := ioutil.ReadAll(res.Body)
 

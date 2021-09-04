@@ -1,6 +1,7 @@
 contractId: "order-get"
 url: "http://localhost:3000/order/1"
 method: "GET"
+status: 200
 request: ""
 response: "
 {
