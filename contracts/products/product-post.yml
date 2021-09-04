@@ -1,13 +1,37 @@
 contractId: "product-post"
-url: "http://localhost:3000/product/1"
+url: "http://localhost:3000/product"
 method: "POST"
-status: 200
-payload: ""
-request: ""
+status: 201
+payload: "
+{
+    \"productName\" : \"novo produto\",
+    \"price\" : 1111.9
+}
+"
+request: "
+{
+  \"$id\": \"product-request\",
+  \"title\": \"Product Request\",
+  \"description\": \"A product from Acme's catalog\",
+  \"type\": \"object\",
+  \"properties\": {
+      \"productName\": {
+        \"description\": \"Name of the product\",
+        \"type\": \"string\"
+      },
+      \"price\": {
+        \"description\": \"The price of the product\",
+        \"type\": \"number\",
+        \"exclusiveMinimum\": 0
+      }
+  },
+  \"required\": [ \"productName\", \"price\" ]
+}"
+
 response: "
 {
   \"$id\": \"product-response\",
-  \"title\": \"Product\",
+  \"title\": \"Product Response\",
   \"description\": \"A product from Acme's catalog\",
   \"type\": \"object\",
   \"properties\": {

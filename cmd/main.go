@@ -6,6 +6,6 @@ import (
 
 func main() {
 
-	k := kalista.NewKalista("../contracts")
+	k := kalista.NewKalista("./contracts")
 	k.StartContracTest()
 }

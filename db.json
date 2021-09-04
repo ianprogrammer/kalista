@@ -1,9 +1,64 @@
 {
-  "product": [{ "id": 1, "productName": "json-server", "price": 11.0 }],
+  "product": [
+    {
+      "id": 1,
+      "productName": "json-server",
+      "price": 11
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 2
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 3
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 4
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 5
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 6
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 7
+    },
+    {
+      "price": 1111.9,
+      "id": 8
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 9
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 10
+    },
+    {
+      "productName": "novo produto",
+      "price": 1111.9,
+      "id": 11
+    }
+  ],
   "order": [
     {
       "id": 1,
-      "total": 22.0,
+      "total": 22,
       "products": [
         {
           "id": 1,

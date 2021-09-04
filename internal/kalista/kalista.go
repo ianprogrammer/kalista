@@ -1,8 +1,8 @@
 package kalista
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -21,6 +21,7 @@ type contractDefinition struct {
 	Url            string
 	Method         string
 	Status         int
+	Payload        string
 	Request        string
 	Response       string
 	requestSchema  *jsonschema.Schema
@@ -78,7 +79,10 @@ func readAllContractFiles(path string) map[string][]byte {
 			if !info.IsDir() {
 				ext := filepath.Ext(path)
 				if ext != "yml" && ext != "yaml" {
-					bytesFile, _ := ioutil.ReadFile(path)
+					bytesFile, err := ioutil.ReadFile(path)
+					if err != nil {
+						log.Println(err)
+					}
 					yamls[path] = bytesFile
 				}
 			}
@@ -107,20 +111,10 @@ func (k *Kalista) StartContracTest() {
 			contract, err := k.buildContractDefinition(key)
 			defer wg.Done()
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
-			if contract.Method == "GET" {
-				ok, err := k.MakeRequest(contract, nil)
-
-				if err != nil {
-					log.Printf("\t%s\t ContractId: %s, ContractPath: %s", failed, contract.ContractId, key)
-					fmt.Println(err)
-				}
-
-				if ok {
-					log.Printf("\t%s\t ContractId: %s, ContractPath: %s", succeed, contract.ContractId, key)
-				}
-			}
+			ok, err := k.MakeRequest(contract)
+			printMessage(contract, err, ok, key, true)
 
 		}(key)
 	}
@@ -128,9 +122,29 @@ func (k *Kalista) StartContracTest() {
 
 }
 
-func (k *Kalista) MakeRequest(c contractDefinition, payload interface{}) (bool, error) {
+func printMessage(contract contractDefinition, err error, ok bool, key string, isVerbose bool) {
+	if err != nil {
+		log.Printf("\t%s\t ContractId: %s, ContractPath: %s", failed, contract.ContractId, key)
+		if isVerbose {
+			log.Println(err)
+		}
+	}
+	if ok {
+		log.Printf("\t%s\t ContractId: %s, ContractPath: %s", succeed, contract.ContractId, key)
+	}
+}
+
+func (k *Kalista) MakeRequest(c contractDefinition) (bool, error) {
 
 	req, err := http.NewRequest(c.Method, c.Url, nil)
+
+	if err != nil {
+		return false, err
+	}
+
+	if c.requestSchema != nil && c.Payload != "" {
+		req, err = http.NewRequest(c.Method, c.Url, bytes.NewBuffer([]byte(c.Payload)))
+	}
 
 	if err != nil {
 		return false, err
@@ -159,10 +173,18 @@ func (k *Kalista) MakeRequest(c contractDefinition, payload interface{}) (bool, 
 		return false, err
 	}
 
-	if c.requestSchema != nil && payload != nil {
-		// if err = c.requestSchema.ValidateInterface(body); err != nil {
-		// 	return false, err
-		// }
+	if c.requestSchema != nil && c.Payload != "" {
+
+		var payload interface{}
+		// validating response
+		err = json.Unmarshal([]byte(c.Payload), &payload)
+
+		if err != nil {
+			return false, err
+		}
+		if err = c.requestSchema.ValidateInterface(payload); err != nil {
+			return false, err
+		}
 	}
 
 	// validating response
