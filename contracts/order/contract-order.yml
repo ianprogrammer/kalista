@@ -12,7 +12,7 @@ response: "
   \"properties\": {
       \"id\": {
         \"description\": \"The unique identifier of the order\",
-        \"type\": \"integer\"
+        \"type\": \"number\"
       },
       \"total\": {
         \"description\": \"Total of the order\",
@@ -25,7 +25,7 @@ response: "
         \"items\": {
           \"type\": \"object\",
           \"properties\": {
-            \"id\": {\"type\": \"string\"},
+            \"id\": {\"type\": \"number\"},
             \"quantity\": {\"type\": \"number\"}
           }
         }

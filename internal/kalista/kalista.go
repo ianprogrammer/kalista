@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/santhosh-tekuri/jsonschema"
@@ -98,16 +99,22 @@ func NewKalista(folderPath string) Kalista {
 }
 
 func (k *Kalista) StartContracTest() {
+	var wg sync.WaitGroup
+
+	wg.Add(len(k.yamls))
 	for key := range k.yamls {
 		go func(key string) {
 			contract, err := k.buildContractDefinition(key)
+			defer wg.Done()
 			if err != nil {
 				fmt.Println(err)
 			}
 			if contract.Method == "GET" {
-				ok, err := k.makeTest(contract)
+				ok, err := k.MakeRequest(contract, nil)
+
 				if err != nil {
 					log.Printf("\t%s\t ContractId: %s, ContractPath: %s", failed, contract.ContractId, key)
+					fmt.Println(err)
 				}
 
 				if ok {
@@ -117,12 +124,18 @@ func (k *Kalista) StartContracTest() {
 
 		}(key)
 	}
+	wg.Wait()
 
 }
 
-func (k *Kalista) makeTest(c contractDefinition) (bool, error) {
+func (k *Kalista) MakeRequest(c contractDefinition, payload interface{}) (bool, error) {
 
-	req, _ := http.NewRequest(c.Method, c.Url, nil)
+	req, err := http.NewRequest(c.Method, c.Url, nil)
+
+	if err != nil {
+		return false, err
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{
@@ -146,6 +159,13 @@ func (k *Kalista) makeTest(c contractDefinition) (bool, error) {
 		return false, err
 	}
 
+	if c.requestSchema != nil && payload != nil {
+		// if err = c.requestSchema.ValidateInterface(body); err != nil {
+		// 	return false, err
+		// }
+	}
+
+	// validating response
 	err = json.Unmarshal(body, &result)
 
 	if err != nil {
