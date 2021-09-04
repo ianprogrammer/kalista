@@ -1,0 +1,29 @@
+contractId: "product-post"
+url: "http://localhost:3000/product/1"
+method: "POST"
+status: 200
+payload: ""
+request: ""
+response: "
+{
+  \"$id\": \"product-response\",
+  \"title\": \"Product\",
+  \"description\": \"A product from Acme's catalog\",
+  \"type\": \"object\",
+  \"properties\": {
+      \"id\": {
+        \"description\": \"The unique identifier for a product\",
+        \"type\": \"integer\"
+      },
+      \"productName\": {
+        \"description\": \"Name of the product\",
+        \"type\": \"string\"
+      },
+      \"price\": {
+        \"description\": \"The price of the product\",
+        \"type\": \"number\",
+        \"exclusiveMinimum\": 0
+      }
+  },
+  \"required\": [ \"id\", \"productName\", \"price\" ]
+}"
